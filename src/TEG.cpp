@@ -56,10 +56,17 @@ void TEG::Update()
 
 void TEG::StatusLine()
 {
+  std::string statusLine;
+
+  if ( m_mode == 'm' )
+    statusLine = m_status + "          E - EDIT MODE     S - SAVE FILE     Q - EXIT";
+  else
+    statusLine = m_status + "          ESC - MENU";
+
   move( LINES - 1, 0 );
   clrtoeol();
   attron( A_REVERSE );
-  printw( m_status.c_str() );
+  printw( statusLine.c_str() );
   attroff( A_REVERSE );
   move( m_currentY, m_currentX );
 }
