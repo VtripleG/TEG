@@ -11,7 +11,6 @@ TEG::TEG( const std::string& fileName )
   keypad( stdscr, true );
   mousemask( BUTTON1_PRESSED, NULL );
 
-  m_lines.push_back( "" );
   m_currentX = m_currentY = 0;
   m_mode = 'e';
   m_status = "EDIT";
