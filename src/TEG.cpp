@@ -5,7 +5,6 @@
 TEG::TEG( const std::string& fileName )
 {
   m_fileName = fileName;
-  Open();
   initscr();
   noecho();
   cbreak();
@@ -26,6 +25,7 @@ TEG::~TEG()
 
 void TEG::Start()
 {
+  Open();
   Print();
   StatusLine();
 
