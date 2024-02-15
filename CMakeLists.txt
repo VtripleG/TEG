@@ -17,7 +17,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 install(TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-  target_link_libraries(${PROJECT_NAME} ncurses)
+  target_link_libraries(${PROJECT_NAME} ncursesw)
 
   add_custom_target(ProjectRelatedFiles SOURCES
       .astylerc

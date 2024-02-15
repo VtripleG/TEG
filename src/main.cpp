@@ -2,13 +2,15 @@
 #include <iostream>
 #include <memory>
 
-int main(int argc, char **argv)
+int main( int argc, char** argv )
 {
-    TEG tegWin;
-    if (argc > 1)
-        tegWin = TEG(argv[1]);
+  setlocale( LC_ALL, "" );
+  TEG tegWin;
 
-    tegWin.Start();
+  if ( argc > 1 )
+    tegWin = TEG( argv[1] );
 
-    return 0;
+  tegWin.Start();
+
+  return 0;
 }

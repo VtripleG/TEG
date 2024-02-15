@@ -10,6 +10,7 @@ TEG::TEG( const std::string& fileName )
   noecho();
   cbreak();
   keypad( stdscr, true );
+  mousemask( BUTTON1_PRESSED, NULL );
 
   m_lines.push_back( "" );
   m_currentX = m_currentY = 0;
@@ -82,6 +83,30 @@ void TEG::Input( )
 
     case KEY_DOWN:
       Down();
+      return;
+
+    case KEY_MOUSE:
+      MEVENT event;
+
+      if ( getmouse( &event ) == OK )
+      {
+        if ( event.bstate & BUTTON1_PRESSED )
+        {
+          if ( ( event.y <= m_lines.size() ) && ( event.x <= m_lines[event.y].length() - 1 ) )
+          {
+            m_currentX = event.x;
+            m_currentY = event.y;
+            move( m_currentY, m_currentX );
+          }
+        }
+      }
+
+      return;
+
+    case 588:
+      return;
+
+    case 589:
       return;
   }
 
@@ -170,7 +195,7 @@ void TEG::Input( )
           break;
 
         default:
-          m_lines[m_currentY].insert( m_currentX, 1, ch );
+          m_lines[m_currentY].insert( m_currentX, 1, ( int )ch );
           ++m_currentX;
           break;
       }
@@ -194,7 +219,7 @@ void TEG::Print()
     clrtoeol();
   }
 
-  move( m_currentY, m_currentX ); // revert
+  move( m_currentY, m_currentX );
 }
 
 void TEG::Remove( int number )
