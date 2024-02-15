@@ -56,8 +56,10 @@ void TEG::Update()
 
 void TEG::StatusLine()
 {
+  move( LINES - 1, 0 );
+  clrtoeol();
   attron( A_REVERSE );
-  mvprintw( LINES - 1, 0, m_status.c_str() );
+  printw( m_status.c_str() );
   attroff( A_REVERSE );
   move( m_currentY, m_currentX );
 }
@@ -91,7 +93,7 @@ void TEG::Input( )
       {
         if ( event.bstate & BUTTON1_PRESSED )
         {
-          if ( ( event.y <= m_lines.size() ) && ( event.x <= m_lines[event.y].length() - 1 ) )
+          if ( ( event.y < m_lines.size() ) && ( event.x <= m_lines[event.y].length() - 1 ) )
           {
             m_currentX = event.x;
             m_currentY = event.y;
@@ -130,8 +132,16 @@ void TEG::Input( )
           break;
 
         case 's':
-          Save();
-          m_status = "SEVE";
+          try
+          {
+            Save();
+            m_status = "SEVE COMPLITE";
+          }
+          catch ( std::exception& exept )
+          {
+            m_status = exept.what();
+          }
+
           break;
       }
 
@@ -308,7 +318,7 @@ void TEG::Save()
   outputStream.open( m_fileName, std::ios_base::out );
 
   if ( !outputStream.is_open() )
-    return;
+    throw std::logic_error( "File was not open" );
 
   for ( size_t i {}; i < m_lines.size(); ++i )
     outputStream << m_lines[i] << std::endl;
