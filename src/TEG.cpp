@@ -211,8 +211,12 @@ void TEG::Input( )
           break;
 
         default:
-          m_lines[m_currentY].insert( m_currentX, 1, ( int )ch );
-          ++m_currentX;
+          if ( ch >= 32 && ch <= 127 )
+          {
+            m_lines[m_currentY].insert( m_currentX, 1, ( int )ch );
+            ++m_currentX;
+          }
+
           break;
       }
 
