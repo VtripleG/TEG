@@ -1,4 +1,5 @@
 #include "TEG.h"
+#include <filesystem>
 #include <ncurses.h>
 #include <fstream>
 
@@ -24,7 +25,11 @@ TEG::~TEG()
 
 void TEG::Start()
 {
-  Open();
+  if ( std::filesystem::exists( m_fileName ) )
+    Open();
+  else
+    m_lines.push_back( "" );
+
   Print();
   StatusLine();
 
