@@ -2,6 +2,10 @@
 #include <filesystem>
 #include <ncurses.h>
 #include <fstream>
+#include <iostream>
+
+#define MOUSE_SCROLL_UP 65536
+#define MOUSE_SCROLL_DOWN 2097152
 
 TEG::TEG( const std::string& fileName )
 {
@@ -9,8 +13,9 @@ TEG::TEG( const std::string& fileName )
   initscr();
   noecho();
   cbreak();
+  raw();
   keypad( stdscr, true );
-  mousemask( BUTTON1_PRESSED, NULL );
+  mousemask( ALL_MOUSE_EVENTS, NULL );
 
   m_currentX = m_currentY = m_shiftY = 0;
   m_mode = 'e';
@@ -103,21 +108,32 @@ void TEG::Input( )
 
       if ( getmouse( &event ) == OK )
       {
-        if ( event.bstate & BUTTON1_PRESSED )
+        switch ( event.bstate )
         {
-          if ( ( event.y < m_lines.size() ) && ( event.x <= m_lines[event.y].length() - 1 ) )
-          {
-            if ( event.y + m_shiftY > m_lines.size() )
-              return;
+          case BUTTON1_PRESSED:
+            if ( ( event.y < m_lines.size() ) && ( event.x <= m_lines[event.y].length() - 1 ) )
+            {
+              if ( event.y + m_shiftY > m_lines.size() )
+                return;
 
-            m_currentY = event.y + m_shiftY;
+              m_currentY = event.y + m_shiftY;
 
-            if ( event.x > m_lines[m_currentY].length() )
-              return;
+              if ( event.x > m_lines[m_currentY].length() )
+                return;
 
-            m_currentX = event.x;
-            move( m_currentY - m_shiftY, m_currentX );
-          }
+              m_currentX = event.x;
+              move( m_currentY - m_shiftY, m_currentX );
+            }
+
+            break;
+
+          case MOUSE_SCROLL_DOWN:
+            Down();
+            break;
+
+          case MOUSE_SCROLL_UP:
+            Up();
+            break;
         }
       }
 
