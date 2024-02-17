@@ -45,6 +45,7 @@ private:
   std::vector<std::string> m_lines;
   int m_currentX;
   int m_currentY;
+  int m_shiftY;
   char m_mode;
   std::string m_status;
 };

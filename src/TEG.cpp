@@ -12,7 +12,7 @@ TEG::TEG( const std::string& fileName )
   keypad( stdscr, true );
   mousemask( BUTTON1_PRESSED, NULL );
 
-  m_currentX = m_currentY = 0;
+  m_currentX = m_currentY = m_shiftY = 0;
   m_mode = 'e';
   m_status = "EDIT";
 }
@@ -73,7 +73,7 @@ void TEG::StatusLine()
   attron( A_REVERSE );
   printw( statusLine.c_str() );
   attroff( A_REVERSE );
-  move( m_currentY, m_currentX );
+  move( m_currentY - m_shiftY, m_currentX );
 }
 
 void TEG::Input( )
@@ -107,9 +107,16 @@ void TEG::Input( )
         {
           if ( ( event.y < m_lines.size() ) && ( event.x <= m_lines[event.y].length() - 1 ) )
           {
+            if ( event.y + m_shiftY > m_lines.size() )
+              return;
+
+            m_currentY = event.y + m_shiftY;
+
+            if ( event.x > m_lines[m_currentY].length() )
+              return;
+
             m_currentX = event.x;
-            m_currentY = event.y;
-            move( m_currentY, m_currentX );
+            move( m_currentY - m_shiftY, m_currentX );
           }
         }
       }
@@ -239,12 +246,13 @@ void TEG::Print()
       clrtoeol();
     }
     else
-      mvprintw( i, 0, m_lines[i].c_str() );
+      mvprintw( i, 0, m_lines[i + m_shiftY].c_str() );
 
     clrtoeol();
   }
 
-  move( m_currentY, m_currentX );
+  if ( m_currentY != ( LINES - 1 + m_shiftY ) )
+    move( m_currentY - m_shiftY, m_currentX );
 }
 
 void TEG::Remove( int number )
@@ -278,7 +286,11 @@ void TEG::Up()
   if ( m_currentX >= m_lines[m_currentY].length() )
     m_currentX = m_lines[m_currentY].length();
 
-  move( m_currentY, m_currentX );
+  if ( m_currentY < m_shiftY )
+    --m_shiftY;
+
+  if ( m_currentY > m_shiftY )
+    move( m_currentY - m_shiftY, m_currentX );
 }
 
 void TEG::Left()
@@ -286,7 +298,7 @@ void TEG::Left()
   if ( m_currentX > 0 )
   {
     --m_currentX;
-    move( m_currentY, m_currentX );
+    move( m_currentY - m_shiftY, m_currentX );
   }
 }
 
@@ -295,19 +307,26 @@ void TEG::Right()
   if ( ( int )m_currentX <= COLS && m_currentX <= m_lines[m_currentY].length() - 1 )
   {
     ++m_currentX;
-    move( m_currentY, m_currentX );
+    move( m_currentY - m_shiftY, m_currentX );
   }
 }
 
 void TEG::Down()
 {
-  if ( ( int )m_currentY < LINES && m_currentY < m_lines.size() - 1 )
+  if ( m_currentY < m_lines.size() - 1 )
     ++m_currentY;
 
   if ( m_currentX >= m_lines[m_currentY].length() )
     m_currentX = m_lines[m_currentY].length();
 
-  move( m_currentY, m_currentX );
+  if ( m_currentY > ( LINES - 2 + m_shiftY ) )
+  {
+    ++m_shiftY;
+    return;
+  }
+
+  if ( m_currentY != ( LINES - 1 + m_shiftY ) )
+    move( m_currentY - m_shiftY, m_currentX );
 }
 
 void TEG::Open()
