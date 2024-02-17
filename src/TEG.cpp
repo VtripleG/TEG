@@ -304,7 +304,7 @@ void TEG::Left()
 
 void TEG::Right()
 {
-  if ( ( int )m_currentX <= COLS && m_currentX <= m_lines[m_currentY].length() - 1 )
+  if ( ( int )m_currentX <= COLS && m_currentX <= m_lines[m_currentY].length() - 1 && !m_lines[m_currentY].empty() )
   {
     ++m_currentX;
     move( m_currentY - m_shiftY, m_currentX );
